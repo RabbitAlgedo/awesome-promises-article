@@ -2,13 +2,17 @@
 
 ![1*7EYmjkeLQs8QXSLr_6iTMg.jpeg](https://cdn-media-1.freecodecamp.org/images/1*7EYmjkeLQs8QXSLr_6iTMg.jpeg)
 
-                           by Adham El Banhawy
+by Adham El Banhawy
 
 Back-end developers run into challenges all the time while building applications or testing code. As a developer who is fairly new and getting acquainted with those challenges, I have never run into a challenge or inconvenience more frequently — or more memorable — than with **callback functions**.
 
 I am not going to delve too deeply into the details of callback and its pros and cons or alternatives like promises and async/await.
 
 For a more vivid explanation, you can check out [this article](https://medium.com/codebuddies/getting-to-know-asynchronous-javascript-callbacks-promises-and-async-await-17e0673281ee) which explains them thoroughly.
+
+
+===
+
 
 ### Callback Hell
 
@@ -37,6 +41,10 @@ request.get(url, function(error, response, mongoUrl) {
 });
 ```
 
+
+===
+
+
 Okay…so where’s the problem? Well, for one thing, the readability of the code suffers from this technique.
 
 It may seem OK at first when the codebase is small. But this doesn’t scale well, especially if you go more layers deeper into the nested callbacks.
@@ -46,6 +54,11 @@ You will end up with a lot of closing brackets and curly braces that will confus
 I hear some of you, including my naïve past self, telling me wrap it in an `async` function then `await` the callback function. This just doesn’t work.
 
 If there is any code block after the the function that uses callbacks, that code block will execute and **will NOT** wait for the callback.
+
+
+===
+
+Note: [put a bridge something here]
 
 Here’s that mistake that I did before:
 
@@ -93,6 +106,10 @@ async function(){
 };
 ```
 
+
+===
+
+
 Some more experienced devs might say “Just use a different library that uses promises to do the same thing, like [axios](https://www.npmjs.com/package/axios), or just use [fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)”. Sure I can in that scenario, but that’s just running away from the problem.
 
 Besides, this is just an example. Sometimes you can be locked into using a library that doesn’t support promises with no alternatives.
@@ -102,6 +119,11 @@ Like using software development kits (SDKs) to communicate with platforms like A
 Sometimes, even using a callback to do a very simple call with a quick I/O or CRUD operation is fine, and no other logic depends on its results.
 
 But you might be constrained by the runtime environment like in a [Lambda function](https://docs.aws.amazon.com/lambda/latest/dg/getting-started.html) which would kill all process once the main thread finishes, regardless of any asynchronous calls that did not complete.
+
+
+===
+
+Note: [put some bridge here]
 
 ### Solution 1 (easy): Use Node’s “util” module
 
@@ -136,6 +158,10 @@ The above code solves the problem neatly using the [util.promisify](https://node
 All you have to do is use the callback function as an argument to util.promisify, and store it an a variable. In my case, that’s *getChuckNorrisFact*.
 
 Then you use that variable as a function that you can use like a promise with the **.then()** and the *.catch()* methods.
+
+
+===
+
 
 ### Solution 2 (involved): Turn the Callback into a Promise
 

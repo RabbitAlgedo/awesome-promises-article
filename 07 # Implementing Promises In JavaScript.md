@@ -4,13 +4,19 @@
 
 ### The thing I love most about programming is the aha! moment when you start to fully understand a concept. Even though it might take a long time and no small amount of effort to get there, it sure is worth it.
 
-I think that the most effective way to assess (and help improve) our degree of comprehension of a given subject is to try and apply the knowledge to the real world. Not only does this let us identify and ultimately address our weaknesses, but it can also shed some light on the way things work.
+I think that the most effective way to assess (and help improve) our degree of comprehension of a given subject is to try and apply the knowledge to the real world.
+
+Not only does this let us identify and ultimately address our weaknesses, but it can also shed some light on the way things work.
 
 A simple *trial* and error approach often reveals those details that had remained elusive previously.
 
 With that in mind, I believe that learning how to implement **promises** was one of the most important moments in my programming journey — it has given me invaluable insight into how asynchronous code works and has made me a better programmer overall.
 
-I hope that this article will help you come to grips with implementing promises in JavaScript as well.
+I hope that this part will help you come to grips with implementing promises in JavaScript as well.
+
+
+===
+
 
 We shall focus on how to implement the promise core according to [the Promises/A+ specification](https://promisesaplus.com/) with a few methods of [the Bluebird API](http://bluebirdjs.com/docs/api-reference.html).
 
@@ -23,13 +29,29 @@ If you don’t, [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/G
 
 Now that we have that out of the way, go ahead and clone the [repository](https://github.com/maciejcieslar/promiseq) and let’s get started.
 
+
+
+===
+
+
+
 ## The core of a promise
 
 As you know, a promise is an object with the following properties:
 
+NOTE: [can be a simple list of items below + intro, that jump next to details at next slides]
+
+===
+
+
 ## Then
 
 A method that attaches a handler to our promise. It returns a new promise with the value from the previous one mapped by one of the handler’s methods.
+
+Note: [We need to put more information here, maybe image, or tell that we'll cover it later]
+
+===
+
 
 ## Handlers
 
@@ -45,9 +67,13 @@ interface Handler<T, U> {
 }
 ```
 
+
+===
+
+
 ## State
 
-A promise can be in one of three states: **resolved, rejected,** or **pending.**
+A promise can be in one of three states: **resolved**, **rejected,** or **pending.**
 
 **Resolved** means that either everything went smoothly and we received our value, or we caught and handled the error.
 
@@ -57,11 +83,21 @@ A promise can be in one of three states: **resolved, rejected,** or **pending.**
 
 The term “the promise is settled” means that the promise is either resolved or rejected.
 
+
+===
+
+
 ## Value
 
 A value that we have either resolved or rejected.
 
 Once the value is set, there is no way of changing it.
+
+NOTE: [we should put more information here]
+
+===
+
+NOTE: [later we'll split this code into 3-5 parts, with details about what each test is doing]
 
 ## Testing
 
@@ -135,6 +171,10 @@ describe('PQ <constructor>', () => {
 });
 ```
 
+
+===
+
+
 ## Running our tests
 
 I highly recommend using the [Jest extension for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=Orta.vscode-jest). It runs our tests in the background for us and shows us the result right there between the lines of our code as green and red dots for passed and failed tests, respectively.
@@ -151,6 +191,10 @@ npm run test
 Regardless of how we run the tests, we can see that all of them come back negative.
 
 Let’s change that.
+
+
+===
+
 
 ## Implementing the Promise core
 
@@ -178,6 +222,10 @@ Our constructor takes a **callback** as a parameter.
 We call this callback with **this.resolve** and **this.reject** as arguments.
 
 Note that normally we would have bound **this.resolve** and **this.reject** to this, but here we have used the class arrow method instead.
+
+
+===
+
 
 ## setResult
 
@@ -209,6 +257,10 @@ class PQ<T> {
 }
 ```
 
+
+===
+
+
 First, we check if the state is not **pending** — if it is, then the promise is already settled and we can’t assign any new value to it.
 
 Then we need to check if a value is a **thenable**.
@@ -218,6 +270,10 @@ By convention, a **thenable** should behave like a promise.
 So in order to get the result, we will call **then** and pass as arguments **this.resolve** and **this.reject.**
 
 Once the **thenable** settles, it will call one of our methods and give us the expected non-promise value.
+
+
+===
+
 
 So now we have to check if an object is a **thenable.**
 
@@ -244,6 +300,10 @@ const isThenable = (obj: any) => isObject(obj) && isFunction(obj.then);
 
 It is important to realize that our promise will never be synchronous,
 even if the code inside the **callback** is.
+
+
+===
+
 
 We are going to delay the execution until the next iteration
 of the event loop by using **setTimeout.**
@@ -286,6 +346,10 @@ Let’s now clear our array of handlers just to be safe and not to execute anyth
 
 And that’s what we must discuss next: a way to attach our handler.
 
+
+===
+
+
 ## attachHandler
 
 ```
@@ -304,6 +368,10 @@ class PQ<T> {
 It really is as simple as it seems. We just add a handler to our handlers array and execute it. That’s it.
 
 Now, to put it all together we need to implement the **then** method.
+
+
+===
+
 
 ## then
 
@@ -346,6 +414,10 @@ class PQ<T> {
 }
 ```
 
+
+===
+
+
 In **then**, we return a promise, and in the **callback**
 we attach a handler that is then used to wait for the current promise to be settled.
 
@@ -358,6 +430,10 @@ that we don’t try to execute something that might be **undefined**.
 
 Also, in **onFail** when the handler is passed, we actually
 resolve the returned promise, because the error has been handled.
+
+
+===
+
 
 ## catch
 
@@ -374,6 +450,10 @@ class PQ<T> {
 ```
 
 That’s it.
+
+
+===
+
 
 ## Finally
 
@@ -411,6 +491,10 @@ describe('PQ.prototype.finally', () => {
 });
 ```
 
+
+===
+
+
 ```
 class PQ<T> {
 
@@ -445,6 +529,10 @@ class PQ<T> {
 }
 ```
 
+
+===
+
+
 ## toString
 
 ```
@@ -473,7 +561,16 @@ Having implemented the core of our promises, we can
 now implement some of the previously mentioned
 Bluebird methods, which will make operating on promises easier for us.
 
+
+===
+
+
 ## Additional methods
+
+NOTE: [add intoduction here]
+
+===
+
 
 ## Promise.resolve
 [How it should work.](http://bluebirdjs.com/docs/api/promise.resolve.html)
@@ -499,6 +596,10 @@ class PQ<T> {
   }
 }
 ```
+
+
+===
+
 
 ## Promise.reject
 
@@ -526,6 +627,10 @@ class PQ<T> {
   }
 }
 ```
+
+
+===
+
 
 ## Promise.all
 
@@ -583,12 +688,20 @@ class PQ<T> {
 }
 ```
 
+
+===
+
+
 I believe the implementation is pretty straightforward.
 
 Starting at **collection.length**, we count down with
 each **tryResolve** until we get to 0, which means that
 every item of the collection has been resolved.
 We then resolve the newly created collection.
+
+
+===
+
 
 ## Promise.any
 
@@ -614,6 +727,10 @@ describe('PQ.any', () => {
 });
 ```
 
+
+===
+
+
 ```
 class PQ<T> {
 
@@ -633,9 +750,14 @@ class PQ<T> {
 
 We simply wait for the first value to resolve and return it in a promise.
 
+
+===
+
+
 ## Promise.props
 
 [How it should work.](http://bluebirdjs.com/docs/api/promise.props.html)
+
 ```
 describe('PQ.props', () => {
   test('resolves object correctly', () => {
@@ -654,6 +776,10 @@ describe('PQ.props', () => {
   });
 });
 ```
+
+===
+
+
 
 ```
 class PQ<T> {
@@ -688,6 +814,10 @@ We iterate over keys of the passed object,
 resolving every value. We then assign the values
 to the new object and resolve a promise with it.
 
+
+===
+
+
 ## Promise.prototype.spread
 
 [How it should work.](http://bluebirdjs.com/docs/api/spread.html)
@@ -709,6 +839,10 @@ describe('PQ.protoype.spread', () => {
 });
 ```
 
+
+===
+
+
 ```
 class PQ<T> {
 
@@ -725,6 +859,10 @@ class PQ<T> {
   }
 }
 ```
+
+
+===
+
 
 ## Promise.delay
 
@@ -758,6 +896,10 @@ describe('PQ.delay', () => {
 });
 ```
 
+
+===
+
+
 ```
 class PQ<T> {
 
@@ -773,6 +915,10 @@ class PQ<T> {
 
 By using **setTimeout, we simply** delay the execution
 of the **resolve** function by the given number of milliseconds.
+
+
+===
+
 
 ## Promise.prototype.timeout
 
@@ -802,6 +948,10 @@ describe('PQ.prototype.timeout', () => {
 });
 ```
 
+
+===
+
+
 ```
 class PQ<T> {
 
@@ -826,6 +976,10 @@ This one is a bit tricky.
 If the **setTimeout** executes faster **than** then in our
 promise, it will reject the promise with our special error.
 
+
+===
+
+
 ## Promise.promisify
 
 [How it should work.](http://bluebirdjs.com/docs/api/promise.promisify.html)
@@ -847,6 +1001,10 @@ describe('PQ.promisify', () => {
   });
 });
 ```
+
+
+===
+
 
 ```
 class PQ<T> {
@@ -878,6 +1036,10 @@ class PQ<T> {
 We apply to the function all the passed arguments,
 plus — as the last one — we give the error-first **callback.**
 
+
+===
+
+
 ## Promise.promisifyAll
 [How it should work.](http://bluebirdjs.com/docs/api/promise.promisifyall.html)
 
@@ -901,6 +1063,10 @@ describe('PQ.promisifyAll', () => {
   });
 });
 ```
+
+
+===
+
 
 ```
 class PQ<T> {
@@ -926,7 +1092,12 @@ class PQ<T> {
 We iterate over the keys of the object and **promisify**
 its methods and add to each name of the method word **Async**.
 
+
+===
+
+
 ## Wrapping up
+
 Presented here were but a few amongst all of the Bluebird API
 methods, so I strongly encourage you to explore,
 play around with, and try implementing the rest of them.
